@@ -1,0 +1,78 @@
+#####  DATA CLEANING AND IMPORT – SQL Queries  ######
+
+# Import SQL Queries:
+
+# Table: DOCTOR_PROFILES
+CREATE TABLE DOCTOR_PROFILES AS
+select * from d1 
+union all
+select * from d2
+union all
+select * from d3
+union all
+select * from d4
+union all
+select * from d5;
+
+# Table: PATIENT_ADMISSIONS
+CREATE TABLE PATIENT_ADMISSIONS AS
+select * from P1 
+union all
+select * from P2
+union all
+select * from P3
+union all
+select * from P4
+union all
+select * from P5;
+
+# Table: TREATMENT_RECORDS
+CREATE TABLE TREATMENT_RECORDS AS
+select * from T1 
+union all
+select * from T2
+union all
+select * from T3
+union all
+select * from T4
+union all
+select * from T5;
+
+# Data Cleaning SQL Queries:
+
+# To clean mismatched Doctor_IDs in Doctor Profiles Table:
+UPDATE DOCTOR_PROFILES SET DOCTOR_ID = CONCAT('D', SUBSTRING(DOCTOR_ID, 3))
+WHERE DOCTOR_ID LIKE 'D0%';
+
+# Date Conversions:
+
+# Table: PATIENT_ADMISSIONS
+# Columns: ADMISSION_DATE, DISCHARGE_DATE
+UPDATE PATIENT_ADMISSIONS SET ADMISSION_DATE = CASE
+	WHEN ADMISSION_DATE LIKE "%-%" THEN STR_TO_DATE(ADMISSION_DATE,"%d-%m-%Y")
+    WHEN ADMISSION_DATE LIKE "%/%" THEN STR_TO_DATE(ADMISSION_DATE,"%d/%m/%Y")
+    ELSE NULL
+END;
+ALTER TABLE PATIENT_ADMISSIONS MODIFY COLUMN ADMISSION_DATE DATE;
+
+UPDATE PATIENT_ADMISSIONS SET DISCHARGE_DATE = CASE
+	WHEN DISCHARGE_DATE LIKE "%-%" THEN STR_TO_DATE(DISCHARGE_DATE,"%d-%m-%Y")
+    WHEN DISCHARGE_DATE LIKE "%/%" THEN STR_TO_DATE(DISCHARGE_DATE,"%d/%m/%Y")
+    ELSE NULL
+END;
+ALTER TABLE PATIENT_ADMISSIONS MODIFY COLUMN DISCHARGE_DATE DATE;
+
+# Table: TREATMENT_RECORDS
+# Columns: ADMISSION_DATE, DISCHARGE_DATE
+ALTER TABLE TREATMENT_RECORDS MODIFY COLUMN TREATMENT_DATE DATE;
+
+# Removed duplicate column from Doctor Profiles Table:
+ALTER TABLE DOCTOR_PROFILES DROP COLUMN DEPARTMENT;
+
+# Removed Age=0:
+DELETE FROM PATIENT_ADMISSIONS WHERE AGE = 0;
+
+# Created Age Group Column:
+ALTER TABLE PATIENT_ADMISSIONS ADD COLUMN AGE_GROUP VARCHAR(20);
+UPDATE PATIENT_ADMISSIONS
+SET AGE_GROUP = CONCAT(FLOOR(AGE/10)*10, '-', FLOOR(AGE/10)*10 + 9);
