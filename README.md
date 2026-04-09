@@ -115,7 +115,7 @@ An interactive dashboard was created to visualize key metrics and insights.
 
 📷 **Dashboard Preview:**
 
-
+![Dashboard](images/Dashboard_image.png)
 
 📊 **Reports & Insights:**
 
